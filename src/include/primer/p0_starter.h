@@ -114,8 +114,24 @@ class RowMatrixOperations {
   static std::unique_ptr<RowMatrix<T>> AddMatrices(std::unique_ptr<RowMatrix<T>> mat1,
                                                    std::unique_ptr<RowMatrix<T>> mat2) {
     // TODO(P0): Add code
+    int rows1 = mat1->GetRows();
+    int rows2 = mat2->GetRows();
+    int cols1 = mat1->GetColumns();
+    int cols2 = mat2->GetColumns();
 
-    return std::unique_ptr<RowMatrix<T>>(nullptr);
+    if (rows1 != rows2 || cols1 != cols2) {
+      return std::unique_ptr<RowMatrix<T>>(nullptr);
+    }
+
+    std::unique_ptr<RowMatrix<T>> result(new RowMatrix<T>(rows1, cols1));
+
+    for (int i = 0; i < rows1; i++) {
+      for (int j = 0; j < cols1; j++) {
+        result->SetElem(i, j, mat1->GetElem(i, j) + mat2->GetElem(i, j));
+      }
+    }
+
+    return result;
   }
 
   // Compute matrix multiplication (mat1 * mat2) and return the result.
@@ -123,8 +139,28 @@ class RowMatrixOperations {
   static std::unique_ptr<RowMatrix<T>> MultiplyMatrices(std::unique_ptr<RowMatrix<T>> mat1,
                                                         std::unique_ptr<RowMatrix<T>> mat2) {
     // TODO(P0): Add code
+    int rows1 = mat1->GetRows();
+    int rows2 = mat2->GetRows();
+    int cols1 = mat1->GetColumns();
+    int cols2 = mat2->GetColumns();
 
-    return std::unique_ptr<RowMatrix<T>>(nullptr);
+    if (cols1 != rows2) {
+      return std::unique_ptr<RowMatrix<T>>(nullptr);
+    }
+    std::unique_ptr<RowMatrix<T>> result(new RowMatrix<T>(cols1, rows2));
+
+    // multiply matrix
+    for (int i = 0; i < rows1; i++) {
+      for (int j = 0; j < cols2; j++) {
+        T sum = 0;
+        for (int k = 0; k < cols1; k++) {
+          sum += mat1->GetElem(i, k) * mat2->GetElem(k, j);
+        }
+        result->SetElem(i, j, sum);
+      }
+    }
+
+    return result;
   }
 
   // Simplified GEMM (general matrix multiply) operation
@@ -134,7 +170,7 @@ class RowMatrixOperations {
                                                     std::unique_ptr<RowMatrix<T>> matC) {
     // TODO(P0): Add code
 
-    return std::unique_ptr<RowMatrix<T>>(nullptr);
+    return AddMatrices(MultiplyMatrices(matA, matB), matC);
   }
 };
 }  // namespace bustub
