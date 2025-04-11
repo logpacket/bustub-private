@@ -12,8 +12,10 @@
 
 #pragma once
 
+#include <cstddef>
 #include <list>
 #include <mutex>  // NOLINT
+#include <unordered_map>
 #include <vector>
 
 #include "buffer/replacer.h"
@@ -46,7 +48,11 @@ class LRUReplacer : public Replacer {
   size_t Size() override;
 
  private:
-  // TODO(student): implement me!
+  // Mutex for thread safety
+  std::mutex lru_mutex;
+  
+  // List to store the unpinned frames in LRU order (front is least recently used)
+  std::vector<frame_id_t> unpinned_frames;
 };
 
 }  // namespace bustub
