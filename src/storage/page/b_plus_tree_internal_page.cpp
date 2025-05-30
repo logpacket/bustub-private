@@ -92,10 +92,13 @@ ValueType B_PLUS_TREE_INTERNAL_PAGE_TYPE::Lookup(const KeyType &key, const KeyCo
       [&comparator](const MappingType &pair, const KeyType &key) { return comparator(pair.first, key) < 0; });
 
   if (k_it == array + GetSize()) {
-    return array[GetSize() - 1].second;
-  } else {
-    return k_it->second;
+    return ValueAt(GetSize() - 1);  // Return the last value if key is greater than all keys
   }
+
+  if (comparator(k_it->first, key) == 0) {
+    return k_it->second;  // Return the value if key matches
+  }
+  return std::prev(k_it)->second;  // Return the previous value if key does not match
 }
 
 /*****************************************************************************
